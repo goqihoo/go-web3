@@ -22,14 +22,10 @@
 package eth
 
 import (
-	"errors"
-	"github.com/regcostajr/go-web3/complex/types"
-	"github.com/regcostajr/go-web3/dto"
-	"github.com/regcostajr/go-web3/eth/block"
-	"github.com/regcostajr/go-web3/providers"
-	"github.com/regcostajr/go-web3/utils"
-	"math/big"
-	"strings"
+	"github.com/goqihoo/go-web3/complex/types"
+	"github.com/goqihoo/go-web3/dto"
+	"github.com/goqihoo/go-web3/eth/block"
+	"github.com/goqihoo/go-web3/providers"
 )
 
 // Eth - The Eth Module
@@ -137,17 +133,18 @@ func (eth *Eth) IsMining() (bool, error) {
 //    - none
 // Returns:
 // 	  - QUANTITY - number of hashes per second.
-func (eth *Eth) GetHashRate() (*big.Int, error) {
+func (eth *Eth) GetHashRate() (types.ComplexIntResponse, error) {
 
 	pointer := &dto.RequestResult{}
 
 	err := eth.provider.SendRequest(pointer, "eth_hashrate", nil)
 
 	if err != nil {
-		return nil, err
+		return types.ComplexIntResponse(0), err
 	}
 
-	return pointer.ToBigInt()
+	return pointer.ToComplexIntResponse()
+
 }
 
 // GetGasPrice - Returns the current price per gas in wei.
@@ -156,17 +153,18 @@ func (eth *Eth) GetHashRate() (*big.Int, error) {
 //    - none
 // Returns:
 // 	  - QUANTITY - integer of the current gas price in wei.
-func (eth *Eth) GetGasPrice() (*big.Int, error) {
+func (eth *Eth) GetGasPrice() (types.ComplexIntResponse, error) {
 
 	pointer := &dto.RequestResult{}
 
 	err := eth.provider.SendRequest(pointer, "eth_gasPrice", nil)
 
 	if err != nil {
-		return nil, err
+		return types.ComplexIntResponse(0), err
 	}
 
-	return pointer.ToBigInt()
+	return pointer.ToComplexIntResponse()
+
 }
 
 // ListAccounts - Returns a list of addresses owned by client.
@@ -195,17 +193,18 @@ func (eth *Eth) ListAccounts() ([]string, error) {
 //    - none
 // Returns:
 // 	  - QUANTITY - integer of the current block number the client is on.
-func (eth *Eth) GetBlockNumber() (*big.Int, error) {
+func (eth *Eth) GetBlockNumber() (types.ComplexIntResponse, error) {
 
 	pointer := &dto.RequestResult{}
 
 	err := eth.provider.SendRequest(pointer, "eth_blockNumber", nil)
 
 	if err != nil {
-		return nil, err
+		return types.ComplexIntResponse(0), err
 	}
 
-	return pointer.ToBigInt()
+	return pointer.ToComplexIntResponse()
+
 }
 
 // GetBalance - Returns the balance of the account of given address.
@@ -215,7 +214,7 @@ func (eth *Eth) GetBlockNumber() (*big.Int, error) {
 //	  - QUANTITY|TAG - integer block number, or the string "latest", "earliest" or "pending", see the default block parameter: https://github.com/ethereum/wiki/wiki/JSON-RPC#the-default-block-parameter
 // Returns:
 // 	  - QUANTITY - integer of the current balance in wei.
-func (eth *Eth) GetBalance(address string, defaultBlockParameter string) (*big.Int, error) {
+func (eth *Eth) GetBalance(address string, defaultBlockParameter string) (types.ComplexIntResponse, error) {
 
 	params := make([]string, 2)
 	params[0] = address
@@ -226,34 +225,11 @@ func (eth *Eth) GetBalance(address string, defaultBlockParameter string) (*big.I
 	err := eth.provider.SendRequest(pointer, "eth_getBalance", params)
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return pointer.ToBigInt()
-}
+	return pointer.ToComplexIntResponse()
 
-// GetTransactionCount -  Returns the number of transactions sent from an address.
-// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionaccount
-// Parameters:
-//    - DATA, 20 Bytes - address to check for balance.
-//	  - QUANTITY|TAG - integer block number, or the string "latest", "earliest" or "pending", see the default block parameter: https://github.com/ethereum/wiki/wiki/JSON-RPC#the-default-block-parameter
-// Returns:
-// 	  - QUANTITY - integer of the number of transactions sent from this address
-func (eth *Eth) GetTransactionCount(address string, defaultBlockParameter string) (*big.Int, error) {
-
-	params := make([]string, 2)
-	params[0] = address
-	params[1] = defaultBlockParameter
-
-	pointer := &dto.RequestResult{}
-
-	err := eth.provider.SendRequest(pointer, "eth_getTransactionCount", params)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return pointer.ToBigInt()
 }
 
 // GetStorageAt - Returns the value from a storage position at a given address.
@@ -264,11 +240,11 @@ func (eth *Eth) GetTransactionCount(address string, defaultBlockParameter string
 //	  - QUANTITY|TAG - integer block number, or the string "latest", "earliest" or "pending", see the default block parameter: https://github.com/ethereum/wiki/wiki/JSON-RPC#the-default-block-parameter.
 // Returns:
 // 	  - DATA - the value at this storage position.
-func (eth *Eth) GetStorageAt(address string, position *big.Int, defaultBlockParameter string) (string, error) {
+func (eth *Eth) GetStorageAt(address string, position types.ComplexIntParameter, defaultBlockParameter string) (string, error) {
 
 	params := make([]string, 3)
 	params[0] = address
-	params[1] = utils.IntToHex(position)
+	params[1] = position.ToHex()
 	params[2] = defaultBlockParameter
 
 	pointer := &dto.RequestResult{}
@@ -280,6 +256,7 @@ func (eth *Eth) GetStorageAt(address string, position *big.Int, defaultBlockPara
 	}
 
 	return pointer.ToString()
+
 }
 
 // EstimateGas - Makes a call or transaction, which won't be added to the blockchain and returns the used gas, which can be used for estimating the used gas.
@@ -289,7 +266,7 @@ func (eth *Eth) GetStorageAt(address string, position *big.Int, defaultBlockPara
 // 		upper bound. As a result the returned estimate might not be enough to executed the call/transaction when the amount of gas is higher than the pending block gas limit.
 // Returns:
 //    - QUANTITY - the amount of gas used.
-func (eth *Eth) EstimateGas(transaction *dto.TransactionParameters) (*big.Int, error) {
+func (eth *Eth) EstimateGas(transaction *dto.TransactionParameters) (types.ComplexIntResponse, error) {
 
 	params := make([]*dto.RequestTransactionParameters, 1)
 
@@ -300,10 +277,11 @@ func (eth *Eth) EstimateGas(transaction *dto.TransactionParameters) (*big.Int, e
 	err := eth.provider.SendRequest(&pointer, "eth_estimateGas", params)
 
 	if err != nil {
-		return nil, err
+		return types.ComplexIntResponse(0), err
 	}
 
-	return pointer.ToBigInt()
+	return pointer.ToComplexIntResponse()
+
 }
 
 // GetTransactionByHash - Returns the information about a transaction requested by transaction hash.
@@ -340,11 +318,10 @@ func (eth *Eth) GetTransactionByHash(hash string) (*dto.TransactionResponse, err
 
 }
 
-// GetTransactionByBlockHashAndIndex - Returns the information about a transaction requested by block hash.
+// GetTransactionByBlockNumberAndIndex - Returns the information about a transaction requested by bloack index.
 // Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getTransactionByBlockNumberAndIndex
 // Parameters:
-//    - DATA, 32 Bytes - hash of a block
-//    - QUANTITY, number - index of the transaction position
+//    - DATA, 32 Bytes - hash of a transaction
 // Returns:
 //    1. Object - A transaction object, or null when no transaction was found
 //    - hash: DATA, 32 Bytes - hash of the transaction.
@@ -358,59 +335,11 @@ func (eth *Eth) GetTransactionByHash(hash string) (*dto.TransactionResponse, err
 //    - gasPrice: QUANTITY - gas price provided by the sender in Wei.
 //    - gas: QUANTITY - gas provided by the sender.
 //    - input: DATA - the data send along with the transaction.
-func (eth *Eth) GetTransactionByBlockHashAndIndex(hash string, index *big.Int) (*dto.TransactionResponse, error) {
-
-	// ensure that the hash is correctlyformatted
-	if strings.HasPrefix(hash, "0x") {
-		if len(hash) != 66 {
-			return nil, errors.New("malformed block hash")
-		}
-	} else {
-		if len(hash) != 64 {
-			return nil, errors.New("malformed block hash")
-		}
-
-		hash = "0x" + hash
-	}
+func (eth *Eth) GetTransactionByBlockNumberAndIndex(blockIndex types.ComplexIntParameter, index types.ComplexIntParameter) (*dto.TransactionResponse, error) {
 
 	params := make([]string, 2)
-	params[0] = hash
-	params[1] = utils.IntToHex(index)
-
-	pointer := &dto.RequestResult{}
-
-	err := eth.provider.SendRequest(pointer, "eth_getTransactionByBlockHashAndIndex", params)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return pointer.ToTransactionResponse()
-}
-
-// GetTransactionByBlockNumberAndIndex - Returns the information about a transaction requested by block index.
-// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getTransactionByBlockNumberAndIndex
-// Parameters:
-//    - QUANTITY, number - block number
-//    - QUANTITY, number - transaction index in block
-// Returns:
-//    1. Object - A transaction object, or null when no transaction was found
-//    - hash: DATA, 32 Bytes - hash of the transaction.
-//    - nonce: QUANTITY - the number of transactions made by the sender prior to this one.
-//    - blockHash: DATA, 32 Bytes - hash of the block where this transaction was in. null when its pending.
-//    - blockNumber: QUANTITY - block number where this transaction was in. null when its pending.
-//    - transactionIndex: QUANTITY - integer of the transactions index position in the block. null when its pending.
-//    - from: DATA, 20 Bytes - address of the sender.
-//    - to: DATA, 20 Bytes - address of the receiver. null when its a contract creation transaction.
-//    - value: QUANTITY - value transferred in Wei.
-//    - gasPrice: QUANTITY - gas price provided by the sender in Wei.
-//    - gas: QUANTITY - gas provided by the sender.
-//    - input: DATA - the data send along with the transaction.
-func (eth *Eth) GetTransactionByBlockNumberAndIndex(blockIndex *big.Int, index *big.Int) (*dto.TransactionResponse, error) {
-
-	params := make([]string, 2)
-	params[0] = utils.IntToHex(blockIndex)
-	params[1] = utils.IntToHex(index)
+	params[0] = blockIndex.ToHex()
+	params[1] = index.ToHex()
 
 	pointer := &dto.RequestResult{}
 
@@ -453,6 +382,28 @@ func (eth *Eth) SendTransaction(transaction *dto.TransactionParameters) (string,
 
 	return pointer.ToString()
 
+}
+
+// SendRawTransaction - Creates new message call transaction or a contract creation for signed transactions.
+// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendrawtransaction
+// Parameters:
+//    - DATA: 		The inged transaction data
+// Returns:
+//	  - DATA, 32 Bytes - the transaction hash, or the zero hash if the transaction is not yet available.
+func (eth *Eth) SendRawTransaction(rawTransaction types.ComplexString) (types.ComplexString, error) {
+
+	params := make([]types.ComplexString, 1)
+	params[0] = rawTransaction
+
+	pointer := &dto.RequestResult{}
+
+	err := eth.provider.SendRequest(&pointer, "eth_sendRawTransaction", params)
+
+	if err != nil {
+		return "", err
+	}
+
+	return pointer.ToComplexString()
 }
 
 // SignTransaction - Signs transactions without dispatching it to the network. It can be later submitted using eth_sendRawTransaction.
@@ -590,10 +541,10 @@ func (eth *Eth) GetTransactionReceipt(hash string) (*dto.TransactionReceipt, err
 // Returns:
 //    1. Object - A block object, or null when no transaction was found
 //    2. error
-func (eth *Eth) GetBlockByNumber(number *big.Int, transactionDetails bool) (*dto.Block, error) {
+func (eth *Eth) GetBlockByNumber(number types.ComplexIntParameter, transactionDetails bool) (*dto.Block, error) {
 
 	params := make([]interface{}, 2)
-	params[0] = utils.IntToHex(number)
+	params[0] = number.ToHex()
 	params[1] = transactionDetails
 
 	pointer := &dto.RequestResult{}
@@ -605,175 +556,49 @@ func (eth *Eth) GetBlockByNumber(number *big.Int, transactionDetails bool) (*dto
 	}
 
 	return pointer.ToBlock()
+
 }
 
-// GetBlockTransactionCountByHash
-// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblocktransactioncountbyhash
+// Returns the number of transactions sent from an address.
+// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactioncount
 // Parameters:
-//    - DATA, 32 bytes - block hash
+//   -address DATA, 20 Bytes - address.
+//   -tag QUANTITY|TAG - integer block number, or the string "latest", "earliest" or "pending",
 // Returns:
-//    1. QUANTITY, number - number of transactions in the block
-//    2. error
-func (eth *Eth) GetBlockTransactionCountByHash(hash string) (*big.Int, error) {
-	// ensure that the hash is correctlyformatted
-	if strings.HasPrefix(hash, "0x") {
-		if len(hash) != 66 {
-			return nil, errors.New("malformed block hash")
-		}
-	} else {
-		if len(hash) != 64 {
-			return nil, errors.New("malformed block hash")
-		}
-		hash = "0x" + hash
-	}
-
+//   1. QUANTITY - integer of the number of transactions send from this address.
+func (eth *Eth) GetTransactionCount(address string, tag string) (types.ComplexIntResponse, error) {
+	params := make([]interface{}, 2)
+	params[0] = address
+	params[1] = tag
 	pointer := &dto.RequestResult{}
 
-	err := eth.provider.SendRequest(pointer, "eth_getBlockTransactionCountByHash", []string{hash})
+	err := eth.provider.SendRequest(pointer, "eth_getTransactionCount", params)
 
 	if err != nil {
-		return nil, err
+		return types.ComplexIntResponse(0), err
 	}
 
-	return pointer.ToBigInt()
+	return pointer.ToComplexIntResponse()
 }
 
 // GetBlockTransactionCountByNumber - Returns the number of transactions in a block matching the given block number
 // Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblocktransactioncountbynumber
 // Parameters:
-//    - QUANTITY|TAG - integer of a block number, or the string "earliest", "latest" or "pending", as in the default block parameter
+//    - blockNumber, QUANTITY|TAG - integer of a block number, or the string "earliest", "latest" or "pending", as in the default block parameter
 // Returns:
-//    - QUANTITY - integer of the number of transactions in this block
-func (eth *Eth) GetBlockTransactionCountByNumber(defaultBlockParameter string) (*big.Int, error) {
+//    1. QUANTITY - integer of the number of transactions in this block.
+//    2. error
+func (eth *Eth) GetBlockTransactionCountByNumber(blockNumber string) (types.ComplexIntResponse, error) {
 
-	params := make([]string, 1)
-	params[0] = defaultBlockParameter
-
+	params := make([]interface{}, 1)
+	params[0] = blockNumber
 	pointer := &dto.RequestResult{}
 
 	err := eth.provider.SendRequest(pointer, "eth_getBlockTransactionCountByNumber", params)
 
 	if err != nil {
-		return nil, err
+		return types.ComplexIntResponse(0), err
 	}
 
-	return pointer.ToBigInt()
-}
-
-// GetBlockByHash - Returns information about a block by hash.
-// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getblockbyhash
-// Parameters:
-//    - DATA, 32 bytes - Hash of a block
-//    - transactionDetails, bool - indicate if we should have or not the details of the transactions of the block
-// Returns:
-//    1. Object - A block object, or null when no transaction was found
-//    2. error
-func (eth *Eth) GetBlockByHash(hash string, transactionDetails bool) (*dto.Block, error) {
-	// ensure that the hash is correctlyformatted
-	if strings.HasPrefix(hash, "0x") {
-		if len(hash) != 66 {
-			return nil, errors.New("malformed block hash")
-		}
-	} else {
-		hash = "0x" + hash
-		if len(hash) != 62 {
-			return nil, errors.New("malformed block hash")
-		}
-	}
-
-	params := make([]interface{}, 2)
-	params[0] = hash
-	params[1] = transactionDetails
-
-	pointer := &dto.RequestResult{}
-
-	err := eth.provider.SendRequest(pointer, "eth_getBlockByHash", params)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return pointer.ToBlock()
-}
-
-// GetUncleCountByBlockHash - Returns the number of uncles in a block from a block matching the given block hash.
-// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getunclecountbyblockhash
-// Parameters:
-//    - DATA, 32 bytes - Hash of a block
-// Returns:
-//    - QUANTITY, number - integer of the number of uncles in this block
-//    - error
-func (eth *Eth) GetUncleCountByBlockHash(hash string) (*big.Int, error) {
-	// ensure that the hash has been correctly formatted
-	if strings.HasPrefix(hash, "0x") {
-		if len(hash) != 66 {
-			return nil, errors.New("malformed block hash")
-		}
-	} else {
-		if len(hash) != 64 {
-			return nil, errors.New("malformed block hash")
-		}
-		hash = "0x" + hash
-	}
-
-	params := make([]string, 1)
-	params[0] = hash
-
-	pointer := &dto.RequestResult{}
-
-	err := eth.provider.SendRequest(pointer, "eth_getUncleCountByBlockHash", params)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return pointer.ToBigInt()
-}
-
-// GetUncleCountByBlockNumber - Returns the number of uncles in a block from a block matching the given block number.
-// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getunclecountbyblocknumber
-// Parameters:
-//    - QUANTITY, number - integer of a block number
-// Returns:
-//    - QUANTITY, number - integer of the number of uncles in this block
-//    - error
-func (eth *Eth) GetUncleCountByBlockNumber(quantity *big.Int) (*big.Int, error) {
-	// ensure that the hash has been correctly formatted
-
-	params := make([]string, 1)
-	params[0] = utils.IntToHex(quantity)
-
-	pointer := &dto.RequestResult{}
-
-	err := eth.provider.SendRequest(pointer, "eth_getUncleCountByBlockNumber", params)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return pointer.ToBigInt()
-}
-
-// GetCode - Returns code at a given address
-// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getcode
-// Parameters:
-//    - DATA, 20 Bytes - address
-//	  - QUANTITY|TAG - integer block number, or the string "latest", "earliest" or "pending", see the default block parameter: https://github.com/ethereum/wiki/wiki/JSON-RPC#the-default-block-parameter
-// Returns:
-//    - DATA - the code from the given address.
-func (eth *Eth) GetCode(address string, defaultBlockParameter string) (string, error) {
-
-	params := make([]string, 2)
-	params[0] = address
-	params[1] = defaultBlockParameter
-
-	pointer := &dto.RequestResult{}
-
-	err := eth.provider.SendRequest(pointer, "eth_getCode", params)
-
-	if err != nil {
-		return "", err
-	}
-
-	return pointer.ToString()
+	return pointer.ToComplexIntResponse()
 }

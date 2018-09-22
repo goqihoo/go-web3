@@ -24,8 +24,9 @@ package test
 import (
 	"testing"
 
-	"github.com/regcostajr/go-web3"
-	"github.com/regcostajr/go-web3/providers"
+	"github.com/goqihoo/go-web3"
+	"github.com/goqihoo/go-web3/complex/types"
+	"github.com/goqihoo/go-web3/providers"
 )
 
 func TestEthGetBlockByHash(t *testing.T) {
@@ -34,7 +35,7 @@ func TestEthGetBlockByHash(t *testing.T) {
 
 	blockNumber, err := connection.Eth.GetBlockNumber()
 
-	blockByNumber, err := connection.Eth.GetBlockByNumber(blockNumber, false)
+	blockByNumber, err := connection.Eth.GetBlockByNumber(types.ComplexIntParameter(blockNumber.ToInt64()), false)
 
 	if err != nil {
 		t.Error(err)
@@ -49,12 +50,10 @@ func TestEthGetBlockByHash(t *testing.T) {
 	}
 
 	// Ensure it's the same block
-	if (blockByNumber.Number.Cmp(blockByHash.Number)) != 0 ||
+	if (blockByNumber.Number != blockByHash.Number) ||
 		(blockByNumber.Miner != blockByHash.Miner) ||
 		(blockByNumber.Hash != blockByHash.Hash) {
-		t.Errorf("Not same block returned")
-		t.FailNow()
-		t.FailNow()
+			t.FailNow()
 	}
 
 	t.Log(blockByHash.Hash, blockByNumber.Hash)

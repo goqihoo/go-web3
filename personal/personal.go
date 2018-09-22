@@ -22,8 +22,8 @@
 package personal
 
 import (
-	"github.com/regcostajr/go-web3/dto"
-	"github.com/regcostajr/go-web3/providers"
+	"github.com/goqihoo/go-web3/dto"
+	"github.com/goqihoo/go-web3/providers"
 )
 
 // Personal - The Personal Module
@@ -143,6 +143,29 @@ func (personal *Personal) UnlockAccount(address string, password string, duratio
 	pointer := &dto.RequestResult{}
 
 	err := personal.provider.SendRequest(pointer, "personal_unlockAccount", params)
+
+	if err != nil {
+		return false, err
+	}
+
+	return pointer.ToBoolean()
+
+}
+
+// lockAccount - Removes the private key with given address from memory. The account can no longer be used to send transactions.
+// Reference: https://github.com/ethereum/go-ethereum/wiki/Management-APIs#personal_lockAccount
+// Parameters:
+//    - Address - 20 Bytes - The address of the account to unlock.
+// Returns:
+// 	   - Boolean - whether the call was successful
+func (personal *Personal) LockAccount(address string) (bool, error) {
+
+	params := make([]interface{}, 1)
+	params[0] = address
+
+	pointer := &dto.RequestResult{}
+
+	err := personal.provider.SendRequest(pointer, "personal_lockAccount", params)
 
 	if err != nil {
 		return false, err

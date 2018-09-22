@@ -24,9 +24,9 @@ package test
 import (
 	"testing"
 
-	web3 "github.com/regcostajr/go-web3"
-	"github.com/regcostajr/go-web3/dto"
-	"github.com/regcostajr/go-web3/providers"
+	web3 "github.com/goqihoo/go-web3"
+	"github.com/goqihoo/go-web3/dto"
+	"github.com/goqihoo/go-web3/providers"
 	"math/big"
 )
 
@@ -42,7 +42,7 @@ func TestEstimateGas(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	//	transaction.Data = "test"
+	transaction.Data = "test"
 	transaction.From = coinbase
 	transaction.To = coinbase
 	transaction.Value = big.NewInt(10)

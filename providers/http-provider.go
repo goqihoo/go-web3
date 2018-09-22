@@ -30,14 +30,14 @@ import (
 
 	"encoding/json"
 
-	"github.com/regcostajr/go-web3/providers/util"
+	"github.com/goqihoo/go-web3/providers/util"
 )
 
 type HTTPProvider struct {
 	address string
 	timeout int32
 	secure  bool
-	client  *http.Client
+	client *http.Client
 }
 
 func NewHTTPProvider(address string, timeout int32, secure bool) *HTTPProvider {

@@ -22,14 +22,14 @@
 package test
 
 import (
-	"fmt"
-	"github.com/regcostajr/go-web3"
-	"github.com/regcostajr/go-web3/complex/types"
-	"github.com/regcostajr/go-web3/dto"
-	"github.com/regcostajr/go-web3/eth/block"
-	"github.com/regcostajr/go-web3/providers"
-	"math/big"
 	"testing"
+
+	web3 "github.com/goqihoo/go-web3"
+	"github.com/goqihoo/go-web3/eth/block"
+	"github.com/goqihoo/go-web3/providers"
+	"math/big"
+	"github.com/goqihoo/go-web3/dto"
+	"github.com/goqihoo/go-web3/complex/types"
 	"time"
 )
 
@@ -53,14 +53,14 @@ func TestEthGetTransactionCount(t *testing.T) {
 		t.FailNow()
 	}
 
+
 	// count should not change
-	if count.Cmp(countTwo) != 0 {
+	if count != countTwo {
 		t.Errorf("Count incorrect, changed between calls")
 		t.FailNow()
 	}
 	// send a transaction and the count should increase
 
-	t.Log("Starting Count:", count)
 	transaction := new(dto.TransactionParameters)
 	transaction.From = coinbase
 	transaction.To = coinbase
@@ -80,14 +80,14 @@ func TestEthGetTransactionCount(t *testing.T) {
 	newCount, err := connection.Eth.GetTransactionCount(coinbase, block.LATEST)
 
 	if err != nil {
-		t.Error(err)
+	    t.Error(err)
+	    t.FailNow()
+	}
+
+	if newCount.ToInt64() != (countTwo.ToInt64() + 1) {
+		t.Errorf("Incorrect count retrieved")
 		t.FailNow()
 	}
 
-	if newCount.Int64() != (countTwo.Int64() + 1) {
-		t.Errorf(fmt.Sprintf("Incorrect count retrieved; [Expected %d | Got %d]", countTwo.Int64()+1, newCount))
-		t.FailNow()
-	}
 
-	t.Log("Final Count: ", newCount)
 }

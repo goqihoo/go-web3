@@ -24,8 +24,8 @@ package test
 import (
 	"testing"
 
-	web3 "github.com/regcostajr/go-web3"
-	"github.com/regcostajr/go-web3/providers"
+	web3 "github.com/goqihoo/go-web3"
+	"github.com/goqihoo/go-web3/providers"
 )
 
 func TestEthGasPrice(t *testing.T) {
@@ -39,10 +39,6 @@ func TestEthGasPrice(t *testing.T) {
 		t.Fail()
 	}
 
-	if gasPrice.Int64() < 0 {
-		t.Errorf("Negative gasprice")
-		t.FailNow()
-	}
+	t.Log(gasPrice.ToInt64())
 
-	t.Log(gasPrice.Int64())
 }

@@ -26,12 +26,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/regcostajr/go-web3/complex/types"
-	"github.com/regcostajr/go-web3/constants"
+	"github.com/goqihoo/go-web3/complex/types"
+	"github.com/goqihoo/go-web3/constants"
 
 	"encoding/json"
-	"fmt"
-	"math/big"
 )
 
 type RequestResult struct {
@@ -105,23 +103,6 @@ func (pointer *RequestResult) ToInt() (int64, error) {
 
 }
 
-func (pointer *RequestResult) ToBigInt() (*big.Int, error) {
-
-	if err := pointer.checkResponse(); err != nil {
-		return nil, err
-	}
-
-	res := (pointer).Result.(interface{})
-
-	ret, success := big.NewInt(0).SetString(res.(string)[2:], 16)
-
-	if !success {
-		return nil, errors.New(fmt.Sprintf("Failed to convert %s to BigInt", res.(string)))
-	}
-
-	return ret, nil
-}
-
 func (pointer *RequestResult) ToComplexIntResponse() (types.ComplexIntResponse, error) {
 
 	if err := pointer.checkResponse(); err != nil {
@@ -178,9 +159,9 @@ func (pointer *RequestResult) ToSignTransactionResponse() (*SignTransactionRespo
 		return nil, customerror.UNPARSEABLEINTERFACE
 	}
 
-	err = json.Unmarshal([]byte(marshal), signTransactionResponse)
+	json.Unmarshal([]byte(marshal), signTransactionResponse)
 
-	return signTransactionResponse, err
+	return signTransactionResponse, nil
 }
 
 func (pointer *RequestResult) ToTransactionResponse() (*TransactionResponse, error) {
@@ -203,9 +184,9 @@ func (pointer *RequestResult) ToTransactionResponse() (*TransactionResponse, err
 		return nil, customerror.UNPARSEABLEINTERFACE
 	}
 
-	err = json.Unmarshal([]byte(marshal), transactionResponse)
+	json.Unmarshal([]byte(marshal), transactionResponse)
 
-	return transactionResponse, err
+	return transactionResponse, nil
 
 }
 
@@ -223,15 +204,16 @@ func (pointer *RequestResult) ToTransactionReceipt() (*TransactionReceipt, error
 
 	transactionReceipt := &TransactionReceipt{}
 
+
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
 		return nil, customerror.UNPARSEABLEINTERFACE
 	}
 
-	err = json.Unmarshal([]byte(marshal), transactionReceipt)
+	json.Unmarshal([]byte(marshal), transactionReceipt)
 
-	return transactionReceipt, err
+	return transactionReceipt, nil
 
 }
 

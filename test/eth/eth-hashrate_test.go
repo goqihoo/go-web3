@@ -24,8 +24,8 @@ package test
 import (
 	"testing"
 
-	web3 "github.com/regcostajr/go-web3"
-	"github.com/regcostajr/go-web3/providers"
+	web3 "github.com/goqihoo/go-web3"
+	"github.com/goqihoo/go-web3/providers"
 )
 
 func TestEthHashrate(t *testing.T) {
@@ -39,10 +39,6 @@ func TestEthHashrate(t *testing.T) {
 		t.FailNow()
 	}
 
-	if rate.Int64() < int64(0) {
-		t.Errorf("Less than 0 hash rate")
-		t.FailNow()
-	}
-
 	t.Log(rate)
+
 }

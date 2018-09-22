@@ -24,8 +24,8 @@ package test
 import (
 	"testing"
 
-	web3 "github.com/regcostajr/go-web3"
-	"github.com/regcostajr/go-web3/providers"
+	web3 "github.com/goqihoo/go-web3"
+	"github.com/goqihoo/go-web3/providers"
 )
 
 func TestNetPeerCount(t *testing.T) {
@@ -39,6 +39,6 @@ func TestNetPeerCount(t *testing.T) {
 		t.FailNow()
 	}
 
-	t.Log(peers.Uint64())
+	t.Log(peers.ToInt64())
 
 }

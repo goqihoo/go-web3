@@ -23,10 +23,10 @@ package test
 import (
 	"testing"
 
-	"github.com/regcostajr/go-web3"
-	"github.com/regcostajr/go-web3/complex/types"
-	"github.com/regcostajr/go-web3/dto"
-	"github.com/regcostajr/go-web3/providers"
+	"github.com/goqihoo/go-web3"
+	"github.com/goqihoo/go-web3/complex/types"
+	"github.com/goqihoo/go-web3/dto"
+	"github.com/goqihoo/go-web3/providers"
 	"math/big"
 )
 
@@ -59,15 +59,21 @@ func TestGetTransactionByBlockNumberAndIndex(t *testing.T) {
 		t.Fail()
 	}
 
-	tx, err := connection.Eth.GetTransactionByBlockNumberAndIndex(blockNumber, big.NewInt(0))
+	num := types.ComplexIntParameter(blockNumber.ToInt64())
+	index := types.ComplexIntParameter(0)
+	tx, err := connection.Eth.GetTransactionByBlockNumberAndIndex(num, index)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
+
+	t.Log(blockNumber.ToInt64())
+	t.Log(index)
 	t.Log(tx.Hash)
 	t.Log(tx.BlockHash)
 	t.Log(tx.BlockNumber)
 	t.Log(tx.TransactionIndex)
+
 }

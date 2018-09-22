@@ -24,8 +24,8 @@ package test
 import (
 	"testing"
 
-	web3 "github.com/regcostajr/go-web3"
-	"github.com/regcostajr/go-web3/providers"
+	web3 "github.com/goqihoo/go-web3"
+	"github.com/goqihoo/go-web3/providers"
 )
 
 func TestEthSyncing(t *testing.T) {
@@ -36,6 +36,6 @@ func TestEthSyncing(t *testing.T) {
 
 	if err != nil {
 		t.Error(err)
-		t.FailNow()
+		t.Fail()
 	}
 }

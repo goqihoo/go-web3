@@ -1,22 +1,16 @@
-# DEPRECATED
-
- [![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
-
-This project is no longer supported, please consider using [go-ethereum](https://github.com/ethereum/go-ethereum) instead.
-
-[go-ethereum](https://github.com/ethereum/go-ethereum) has all the features of this project(and more) and it's development is much more robust.
-
 # Ethereum Go Client
 
-[![Build Status](https://travis-ci.org/regcostajr/go-web3.svg?branch=master)](https://travis-ci.org/regcostajr/go-web3)
+[![Build Status](https://travis-ci.org/goqihoo/go-web3.svg?branch=master)](https://travis-ci.org/goqihoo/go-web3)
 
 This is a Ethereum compatible Go Client
+which implements the 
+[Eth JSON RPC Module](https://github.com/ethereum/wiki/wiki/JSON-RPC),
+[Personal JSON RPC Module](https://github.com/paritytech/parity/wiki/JSONRPC-personal-module) and
+[NET JSON RPC Module](https://github.com/paritytech/parity/wiki/JSONRPC-net-module#net_version).
 
 ## Status
 
-## DEPRECATED
-
-This package is not currently under active development. It is not already stable and the infrastructure is not complete and there are still several RPCs left to implement.
+This package is currently under active development. It is not already stable and the infrastructure is not complete and there are still several RPCs left to implement.
 
 ## Usage
 
@@ -89,15 +83,6 @@ txID, err := connection.Eth.SendTransaction(transaction)
 
 ## Contribute!
 
-#### Before a Pull Request:
-- Create at least one test for your implementation.
-- Don't change the import path to your github username.
-- run `go fmt` for all your changes.
-- run `go test -v ./...`
-
-#### After a Pull Request:
-- Please use the travis log if an error occurs.
-
 ### In Progress = ![](https://placehold.it/15/FFFF00/000000?text=+)
 ### Partially implemented = ![](https://placehold.it/15/008080/000000?text=+)
 
@@ -118,21 +103,21 @@ TODO List
 - [x] eth_blockNumber                         
 - [x] eth_getBalance                          
 - [x] eth_getStorageAt (deprecated)
-- [x] eth_getTransactionCount                 
-- [x] eth_getBlockTransactionCountByHash      
-- [x] eth_getBlockTransactionCountByNumber    
-- [x] eth_getUncleCountByBlockHash            
-- [x] eth_getUncleCountByBlockNumber          
-- [x] eth_getCode                             
-- [x] eth_sign                                
+- [ ] eth_getTransactionCount                 
+- [ ] eth_getBlockTransactionCountByHash      
+- [ ] eth_getBlockTransactionCountByNumber    
+- [ ] eth_getUncleCountByBlockHash            
+- [ ] eth_getUncleCountByBlockNumber          
+- [ ] eth_getCode                             
+- [ ] eth_sign                                
 - [x] eth_sendTransaction                     
 - [ ] eth_sendRawTransaction                  
 - [x] eth_call                                
 - [x] eth_estimateGas                         
-- [x] eth_getBlockByHash                      
-- [x] eth_getBlockByNumber                    
+- [ ] eth_getBlockByHash                      
+- [ ] ![](https://placehold.it/15/008080/000000?text=+) eth_getBlockByNumber                    
 - [x] eth_getTransactionByHash                
-- [x] eth_getTransactionByBlockHashAndIndex   
+- [ ] eth_getTransactionByBlockHashAndIndex   
 - [x] eth_getTransactionByBlockNumberAndIndex 
 - [x] eth_getTransactionReceipt               
 - [ ] eth_getUncleByBlockHashAndIndex         
@@ -175,13 +160,13 @@ TODO List
 ### go get
 
 ```bash
-go get -u github.com/regcostajr/go-web3
+go get -u github.com/goqihoo/go-web3
 ```
 
 ### glide
 
 ```bash
-glide get github.com/regcostajr/go-web3
+glide get github.com/goqihoo/go-web3
 ```
 
 ### Requirements
@@ -194,13 +179,13 @@ glide get github.com/regcostajr/go-web3
 Node running in dev mode:
 
 ```bash
-geth --dev --shh --ws --wsorigins="*" --rpc --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3 --mine
+geth --dev --ws --wsorigins="*" --rpc --rpcapi eth,web3,personal,ssh,net --mine
 ```
 
 Full test:
 
 ```bash
-go test -v ./test/...
+go test -v test/modulename/*.go
 ```
 
 Individual test:

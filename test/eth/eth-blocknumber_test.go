@@ -24,8 +24,8 @@ package test
 import (
 	"testing"
 
-	"github.com/regcostajr/go-web3"
-	"github.com/regcostajr/go-web3/providers"
+	web3 "github.com/goqihoo/go-web3"
+	"github.com/goqihoo/go-web3/providers"
 )
 
 func TestEthBlockNumber(t *testing.T) {
@@ -39,8 +39,6 @@ func TestEthBlockNumber(t *testing.T) {
 		t.Fail()
 	}
 
-	if blockNumber.Int64() < 0 {
-		t.Errorf("Invalid Block Number")
-		t.Fail()
-	}
+	t.Log(blockNumber.ToInt64())
+
 }

@@ -25,11 +25,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/regcostajr/go-web3/complex/types"
-	"github.com/regcostajr/go-web3/dto"
+	"github.com/goqihoo/go-web3/complex/types"
+	"github.com/goqihoo/go-web3/dto"
 	"strings"
 
-	"github.com/regcostajr/go-web3/utils"
+	"github.com/goqihoo/go-web3/utils"
 	"math/big"
 )
 
@@ -125,6 +125,30 @@ func (contract *Contract) prepareTransaction(transaction *dto.TransactionParamet
 
 }
 
+func (contract *Contract) SignTransaction(transaction *dto.TransactionParameters, functionName string, args ...interface{}) (*dto.SignTransactionResponse, error) {
+
+	trans, err := contract.prepareTransaction(transaction, functionName, args)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return contract.super.SignTransaction(trans)
+
+}
+
+func (contrat *Contract) SendRaw(raw types.ComplexString) (types.ComplexString, error) {
+
+	return contrat.super.SendRawTransaction(raw)
+
+}
+
+func (contract *Contract) EstimateGas(transaction *dto.TransactionParameters) (types.ComplexIntResponse, error) {
+
+	return contract.super.EstimateGas(transaction)
+
+}
+
 func (contract *Contract) Call(transaction *dto.TransactionParameters, functionName string, args ...interface{}) (*dto.RequestResult, error) {
 
 	transaction, err := contract.prepareTransaction(transaction, functionName, args)
@@ -169,9 +193,10 @@ func (contract *Contract) Deploy(transaction *dto.TransactionParameters, bytecod
 
 }
 
-func (contract *Contract) getHexValue(inputType string, value interface{}) (string, error) {
+func (contract *Contract) getHexValue(inputType string, value interface{}) (string,error) {
 
 	var data string
+
 
 	if strings.HasPrefix(inputType, "int") ||
 		strings.HasPrefix(inputType, "uint") ||
@@ -193,7 +218,8 @@ func (contract *Contract) getHexValue(inputType string, value interface{}) (stri
 			}
 		}
 
-		data += fmt.Sprintf("%064s", fmt.Sprintf("%x", bigVal.String()))
+		data += fmt.Sprintf("%064s", bigVal.Text(16))
+		//data += fmt.Sprintf("%064s", fmt.Sprintf("%x", bigVal.String()))
 	}
 
 	if strings.Compare("address", inputType) == 0 {

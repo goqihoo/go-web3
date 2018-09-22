@@ -13,7 +13,7 @@
 *********************************************************************************/
 
 /**
- * @file syncing.go
+ * @file ssh-post.go
  * @authors:
  *   Reginaldo Costa <regcostajr@gmail.com>
  * @date 2017
@@ -21,10 +21,11 @@
 
 package dto
 
-import "github.com/goqihoo/go-web3/complex/types"
-
-type SyncingResponse struct {
-	StartingBlock types.ComplexIntResponse `json:"startingBlock"`
-	CurrentBlock  types.ComplexIntResponse `json:"currentBlock"`
-	HighestBlock  types.ComplexIntResponse `json:"highestBlock"`
+type SSHPostParameters struct {
+	From     string   `json:"from"`
+	To       string   `json:"to"`
+	Topics   []string `json:"topics"`
+	Payload  string   `json:"payload"`
+	Priority string   `json:"priority"`
+	TTL      string   `json:"ttl"`
 }
