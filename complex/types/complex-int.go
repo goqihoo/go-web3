@@ -53,6 +53,6 @@ func (s ComplexIntResponse) ToInt64() int64 {
 }
 
 func (s ComplexIntResponse) ToBigInt() *big.Int {
-	big, _ := new(big.Int).SetString(string(s), 16)
+	big, _ := new(big.Int).SetString(strings.TrimPrefix(string(s), "0x"), 16)
 	return big
 }
