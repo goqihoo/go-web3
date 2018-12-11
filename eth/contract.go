@@ -146,7 +146,6 @@ func (contrat *Contract) SendRaw(raw types.ComplexString) (types.ComplexString, 
 func (contract *Contract) EstimateGas(transaction *dto.TransactionParameters) (types.ComplexIntResponse, error) {
 
 	return contract.super.EstimateGas(transaction)
-
 }
 
 func (contract *Contract) Call(transaction *dto.TransactionParameters, functionName string, args ...interface{}) (*dto.RequestResult, error) {

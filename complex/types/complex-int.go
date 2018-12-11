@@ -40,7 +40,7 @@ type ComplexIntResponse string
 
 func (s ComplexIntResponse) ToUInt64() uint64 {
 
-	sResult, _ := strconv.ParseUint(string(s), 16, 64)
+	sResult, _ := strconv.ParseUint(strings.TrimPrefix(string(s), "0x"), 16, 64)
 	return sResult
 
 }
